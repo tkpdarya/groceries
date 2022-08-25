@@ -23,7 +23,7 @@ public class GroceriesTest {
 		Map<String, Integer> input_test = new HashMap<String, Integer>();
 		input_test.put("Carrot", 1);
 		ShopEntity shop = new ShopEntity();
-		assertEquals(24, shop.setCheckout(input_test, "cc", false));
+		assertEquals(1.8, shop.setCheckout(input_test, "cash", true));
 	}
 
 }
