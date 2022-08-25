@@ -10,7 +10,7 @@ import com.tokopedia.programming.menu.GroceriesMenu;
 
 public class ShopEntity {
 	
-	Scanner input_scanner = new Scanner(System.in);
+	Scanner input_scanner = new Scanner(System.in).useDelimiter("\n");
 	
 	public void setCustomerInput() {
 		Map<String, Integer> shop_cart = new HashMap<String, Integer>();
@@ -21,6 +21,7 @@ public class ShopEntity {
 		int total_item_to_buy = 0;
 		boolean shop_action = true;
 		boolean member_status = false;
+		double total_checkout = 0;
 		
 		System.out.print("Are you a member? (Yes/No)");
 		member_confirmation = input_scanner.next();
@@ -29,7 +30,7 @@ public class ShopEntity {
 			member_status = true;
 		}
 		
-		while (shop_action == true) {
+		while (shop_action) {
 			
 			System.out.print("Please select your item");
 			item_to_buy = input_scanner.next();
@@ -39,8 +40,16 @@ public class ShopEntity {
 			
 			System.out.print("Add more item? (Yes/No)");
 			shop_confirmation = input_scanner.next();
-			
-			shop_cart.put(item_to_buy, total_item_to_buy);
+
+			// check if customer input the same item
+			if (shop_cart.containsKey(item_to_buy))	{
+				int current_value = shop_cart.get(item_to_buy);
+				total_item_to_buy = total_item_to_buy + current_value;
+
+				shop_cart.put(item_to_buy, total_item_to_buy);
+			} else {
+				shop_cart.put(item_to_buy, total_item_to_buy);
+			}
 			
 			if (shop_confirmation.equals("No")) {
 				shop_action = false;
@@ -52,7 +61,7 @@ public class ShopEntity {
 		payment_method = input_scanner.next();
 		
 		// final confirmation for membership
-		if(member_status == false)	{
+		if(!member_status)	{
 			System.out.println("You are not a member. Become a member? (Yes/No)");
 			System.out.print("Member will get lifetime discount and offer just for $100");
 			member_confirmation = input_scanner.next();
@@ -63,7 +72,9 @@ public class ShopEntity {
 			
 		}
 		
-		setCheckout(shop_cart, payment_method, member_status);
+		total_checkout = setCheckout(shop_cart, payment_method, member_status);
+
+		System.out.println("Total payment: " + total_checkout);
 		
 	}
 
@@ -79,11 +90,13 @@ public class ShopEntity {
 		
 		while (iterator.hasNext()) {
 			Map.Entry<String, Integer> mapElement = (Map.Entry<String, Integer>) iterator.next();
-			System.out.println(mapElement.getKey() + " - " + mapElement.getValue() + " -> total: " + Integer.parseInt(store_item.get(mapElement.getKey())) * mapElement.getValue());
-			total_payment = total_payment + Integer.parseInt(store_item.get(mapElement.getKey())) * mapElement.getValue();
+			System.out.println(mapElement.getKey() + " - " + mapElement.getValue() + " -> total: " + Double.parseDouble(store_item.get(mapElement.getKey())) * mapElement.getValue());
+			total_payment = total_payment + Double.parseDouble(store_item.get(mapElement.getKey())) * mapElement.getValue();
 		}
+
+		System.out.println("Total price: " + total_payment);
 		
-		if(member_status == false)	{
+		if(!member_status)	{
 			System.out.print("Want to get new membership? Only $100! (Yes/No)");
 			membership_prompt = input_scanner.next();
 			if(membership_prompt.equals("Yes"))	{
@@ -92,20 +105,20 @@ public class ShopEntity {
 			}
 		}
 		
-		if(member_status == true)	{
+		if(member_status)	{
 			total_payment = total_payment * 0.9;
+			System.out.println("Get discount 10%");
 		}
 		
 		if(total_payment > 100)	{
 			total_payment = total_payment - 10;
+			System.out.println("Get discount $10");
 		}
 		
 		if(payment_method.equals("cc"))	{
 			total_payment = total_payment * 1.2;
+			System.out.println("Get charged 20%");
 		}
-		
-		System.out.println("Shop total: " + total_payment);
-		
 		
 		return total_payment;
 		
